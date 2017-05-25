@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="GBK"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+	          
+    <!--查询短信回执定时任务，每1分钟执行-->
+    <bean id="querySmsTask" class="com.qtt.sms.task.QuerySmsTask"/>
+    <bean id="querySmsJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+          p:targetObject-ref="querySmsTask" p:targetMethod="runTask"/>
+    <bean id="querySmsJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+          p:jobDetail-ref="querySmsJobDetail"
+          p:cronExpression="0 * * * * ?"/>
+          
+    <!-- 日报表统计 -->
+    <bean id="counterDailyTask" class="com.qtt.sms.task.CounterDailyTask"/>
+    <bean id="counterDailyJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+          p:targetObject-ref="counterDailyTask" p:targetMethod="runTask"/>
+    <bean id="counterDailyJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+          p:jobDetail-ref="counterDailyJobDetail"
+          p:cronExpression="0 0 2 * * ?"/>
+          
+    <!-- 月报表统计 -->
+    <bean id="counterMonthlyTask" class="com.qtt.sms.task.CounterMonthlyTask"/>
+    <bean id="counterMonthlyJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+          p:targetObject-ref="counterMonthlyTask" p:targetMethod="runTask"/>
+    <bean id="counterMonthlyJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+          p:jobDetail-ref="counterMonthlyJobDetail"
+          p:cronExpression="0 0 3 1 * ?"/>
+	      
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <!-- <ref local="querySmsJobTrigger"/>
+                <ref local="counterDailyJobTrigger"/>
+                <ref local="counterMonthlyJobTrigger"/> -->
+            </list>
+        </property>
+    </bean>
+</beans>
